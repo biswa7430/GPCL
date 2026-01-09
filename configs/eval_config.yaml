@@ -1,0 +1,40 @@
+# Evaluation Configuration
+
+# Model settings
+model:
+  name: "fasterrcnn_resnet50_fpn"
+  num_classes: 6  # 5 classes + background (people, bus, car, motorcycle, truck)
+  checkpoint: "./checkpoints/train_visdrone/checkpoint_best.pth"
+
+# Dataset settings - Multi-dataset support
+dataset:
+  name: "coco"
+  # Use multi_datasets to enable cross-dataset evaluation
+  # Set enabled: true/false to include/exclude each dataset
+  multi_datasets:
+    - name: "indraEye"
+      root: "./data/indraEye_dataset"
+      enabled: false
+    - name: "visdrone"
+      root: "./data/visdrone_dataset"
+      enabled: false
+    - name: "UAV-DT"
+      root: "./data/UAV_DT"
+      enabled: true
+
+  # Legacy single dataset path (used if multi_datasets not specified)
+  data_path: "./data/indraEye_dataset"
+  eval_set: "val"
+  
+# Evaluation settings
+evaluation:
+  batch_size: 1
+  num_workers: 4
+  
+# Output settings
+output:
+  output_dir: "./outputs/evaluation"
+  save_results: true
+
+# Device settings
+device: "cuda"

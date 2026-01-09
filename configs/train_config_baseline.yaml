@@ -1,0 +1,76 @@
+# Training Configuration - BASELINE (SHM only, no GPCL)
+# Use this for fair comparison with novel contributions
+
+# Model settings
+model:
+  name: "fasterrcnn_resnet50_fpn"
+  num_classes: 6
+  pretrained_backbone: true
+  trainable_backbone_layers: 5
+
+# Dataset settings - TRAIN ON BOTH DATASETS
+dataset:
+  multi_datasets:
+    - name: "indraEye"
+      root: "./data/indraEye_dataset"
+      enabled: false
+    - name: "visdrone"
+      root: "./data/visdrone_dataset"
+      enabled: true
+
+# Training hyperparameters
+training:
+  epochs: 70
+  batch_size: 8
+  num_workers: 8
+  learning_rate: 0.01
+  momentum: 0.9
+  weight_decay: 0.0005
+  
+  # Learning rate schedule
+  lr_scheduler: "cosineannealinglr"
+  lr_warmup_epochs: 5
+  lr_warmup_method: "linear"
+  lr_warmup_decay: 0.01
+  
+  # Optimization
+  optimizer: "sgd"
+  amp: true
+  
+  # Data augmentation
+  data_augmentation: "lsj"
+  aspect_ratio_group_factor: 3
+  use_copypaste: false
+
+# SHM Configuration - BASELINE (No GPCL)
+shm:
+  enable: true
+  
+  # Image-level augmentation
+  image_level: true
+  image_mix_prob: 0.85
+  image_alpha: 0.5
+  
+  # Feature-level augmentation
+  feature_level: true
+  style_dim: 256
+  base_style_num: 48
+  concentration: 0.015
+  
+  # Consistency loss
+  consistency_loss_weight: 0.7
+  consistency_cls_weight: 1.0
+  consistency_box_weight: 1.5
+  
+  # GPCL DISABLED for baseline
+  gpcl_loss_weight: 0.0  # ← DISABLED
+
+# Output settings
+output:
+  output_dir: "./checkpoints/baseline_shm"
+  print_freq: 20
+  save_freq: 1
+
+# Reproducibility
+seed: 42
+deterministic: false

@@ -1,0 +1,218 @@
+# Model settings
+model:
+  name: "fasterrcnn_resnet50_fpn"
+  num_classes: 6
+  pretrained_backbone: true
+  trainable_backbone_layers: 5  # CHANGE: Train all backbone layers for better adaptation
+
+# Dataset settings - TRAIN ON VISDRONE ONLY
+dataset:
+  multi_datasets:
+    - name: "indraEye"
+      root: "./data/indraEye_dataset"
+      enabled: false  # DISABLED for VisDrone-only training
+    - name: "visdrone"
+      root: "./data/visdrone_dataset"
+      enabled: true   # ENABLED - single dataset training
+
+# Training hyperparameters
+training:
+  epochs: 50  # OPTIMAL: 50 epochs is sufficient for single dataset
+  batch_size: 4  # STABLE: Smaller batch for better convergence
+  num_workers: 8
+  learning_rate: 0.005  # LOWER: More stable for aggressive augmentation
+  momentum: 0.9
+  weight_decay: 0.0001  # STANDARD: Balanced regularization
+  
+  # Validation frequency
+  val_freq: 2  # Run validation every 2 epochs for better tracking
+  
+  # Learning rate schedule - OPTIMAL FOR SINGLE DATASET
+  lr_scheduler: "multisteplr"  # PROVEN: Works best for object detection
+  lr_steps: [30, 40]  # Decay at 60% and 80% of training
+  lr_gamma: 0.1
+  lr_warmup_epochs: 3  # Shorter warmup for single dataset
+  lr_warmup_method: "linear"
+  lr_warmup_decay: 0.01
+  
+  # Optimization
+  optimizer: "sgd"
+  amp: true  # ENABLE: Faster training, more memory for larger batches
+  
+  # Data augmentation - BALANCED
+  data_augmentation: "hflip"  # STANDARD: Horizontal flip only (less aggressive)
+  aspect_ratio_group_factor: 3
+  use_copypaste: false
+
+# SHM Configuration - OPTIMAL FOR SINGLE DATASET
+shm:
+  enable: true
+  
+  # Image-level augmentation (MODERATE STRENGTH)
+  image_level: true
+  image_mix_prob: 0.6   # MODERATE: Mix 60% of images (balanced)
+  image_alpha: 0.35     # MODERATE: Balanced style transfer
+  
+  # Feature-level augmentation (CONSERVATIVE)
+  feature_level: true   # ENABLE: Dual-level mixing
+  style_dim: 256
+  base_style_num: 32    # STANDARD: Sufficient diversity
+  concentration: 0.02   # STANDARD: Balanced prototype mixing
+  
+  # Consistency loss - CONSERVATIVE
+  consistency_loss_weight: 0.5    # MODERATE: Balanced consistency
+  consistency_cls_weight: 1.0
+  consistency_box_weight: 1.0     # STANDARD: Equal weighting
+  
+  # NOVEL: Geometry-Preserving Contrastive Learning (GPCL) ✅
+  # NOW ENABLED with real RoI feature extraction!
+  # Uses actual 1024-D features from box_head (TwoMLPHead output)
+  gpcl_loss_weight: 0.2           # CONSERVATIVE: Start lower for stability
+  gpcl_feature_dim: 1024          # RoI feature dimension (from Faster R-CNN TwoMLPHead)
+  gpcl_projection_dim: 128        # Projection head output dimension
+  gpcl_temperature: 0.07          # Temperature for contrastive loss
+  gpcl_top_k: 100                 # Top-K detections to match
+
+# Output settings
+output:
+  output_dir: "./checkpoints"
+  print_freq: 20
+  # Note: Now only saves checkpoint_best.pth (best mAP) and checkpoint_last.pth (latest epoch)
+
+
+# Reproducibility
+seed: 42
+deterministic: false
+
+
+
+# # Training Configuration
+
+# # Model settings
+# model:
+#   name: "fasterrcnn_resnet50_fpn"
+#   num_classes: 6  # 5 classes + background (people, bus, car, motorcycle, truck)
+#   pretrained_backbone: true
+#   trainable_backbone_layers: null
+#   rpn_score_thresh: null
+
+# # Dataset settings - Multi-dataset support
+# dataset:
+#   name: "coco"
+#   # Use multi_datasets to enable cross-dataset training
+#   # Set enabled: true/false to include/exclude each dataset
+#   multi_datasets:
+#     - name: "indraEye"
+#       root: "./data/indraEye_dataset"
+#       enabled: false
+#     - name: "visdrone"
+#       root: "./data/visdrone_dataset"
+#       enabled: true
+
+#   # Legacy single dataset path (used if multi_datasets not specified)
+#   data_path: "./data/indraEye_dataset"
+#   train_set: "train"
+#   val_set: "val"
+  
+# # # Training hyperparameters
+# # training:
+# #   epochs: 50
+# #   batch_size: 8
+# #   num_workers: 8
+# #   learning_rate: 0.02  # 0.02 for 8 GPUs, scale accordingly
+# #   momentum: 0.9
+# #   weight_decay: 0.0001
+
+# #   # Learning rate schedule
+# #   lr_scheduler: "multisteplr"
+# #   lr_steps: [16, 22]
+# #   lr_gamma: 0.1
+  
+# #   # Optimization
+# #   optimizer: "sgd"
+# #   amp: false  # Automatic Mixed Precision
+
+# # Training hyperparameters
+# training:
+#   epochs: 100  # Extended training
+#   batch_size: 4   # Smaller batch = more gradient updates
+#   num_workers: 4
+#   learning_rate: 0.008  # Lower LR for stability
+#   momentum: 0.95  # Higher momentum for smoother optimization
+#   weight_decay: 0.001  # Very strong regularization
+  
+#   lr_scheduler: "cosineannealinglr"
+#   lr_warmup_epochs: 8
+  
+#   optimizer: "adamw"  # CHANGE: Better for heavy augmentation
+#   amp: true
+#   data_augmentation: "lsj"
+  
+#   # Data augmentation
+#   data_augmentation: "hflip"
+#   aspect_ratio_group_factor: 3
+#   use_copypaste: false
+  
+# # Distributed training
+# distributed:
+#   world_size: 1
+#   dist_url: "env://"
+  
+# # Output settings
+# output:
+#   output_dir: "./checkpoints"
+#   print_freq: 20
+#   save_freq: 1  # Save checkpoint every N epochs
+
+# # Device settings
+# device: "cuda"
+
+# # Reproducibility
+# seed: 42
+# deterministic: false
+
+# # ...existing code...
+
+# # shm:
+# #   enable: true
+  
+# #   # Image-level augmentation (primary domain generalization method)
+# #   image_level: true
+# #   image_mix_prob: 0.7  # Increased from 0.5 - mix 70% of images
+# #   image_alpha: 0.45    # Increased from 0.35 - stronger style transfer (0.3-0.6 range)
+  
+# #   # Feature-level augmentation (disable initially)
+# #   feature_level: false
+# #   style_dim: 256
+# #   base_style_num: 32
+# #   concentration: 0.02
+  
+# #   # Consistency loss (encourages predictions to be stable across style variations)
+# #   consistency_loss_weight: 0.5  # Weight for consistency loss
+# #   consistency_cls_weight: 1.0    # Weight for classification consistency
+# #   consistency_box_weight: 1.0    # Weight for box regression consistency
+
+# # SHM Configuration - MAXIMUM AGGRESSION
+# shm:
+#   enable: true
+  
+#   # Image-level
+#   image_level: true
+#   image_mix_prob: 0.95  # Mix almost all images
+#   image_alpha: 0.55     # Very strong style transfer
+  
+#   # Feature-level
+#   feature_level: true
+#   style_dim: 256
+#   base_style_num: 64    # Maximum style diversity
+#   concentration: 0.01   # Very diverse mixing
+  
+#   # Consistency loss - VERY STRONG
+#   consistency_loss_weight: 1.0
+#   consistency_cls_weight: 1.2
+#   consistency_box_weight: 2.0 
+# # Training settings
+# learning_rate: 0.005  # Reduced from 0.02 to prevent instability
+# weight_decay: 0.0001
+
+# # ...existing code...

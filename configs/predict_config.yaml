@@ -1,0 +1,46 @@
+# Prediction/Inference Configuration
+
+# Model settings
+model:
+  name: "fasterrcnn_resnet50_fpn"
+  num_classes: 6  # 5 classes + background (people, bus, car, motorcycle, truck)
+  checkpoint: "./checkpoints/train_visdrone/checkpoint_best.pth"
+
+# Dataset settings (for batch prediction) - Multi-dataset support
+dataset:
+  # Use multi_datasets to enable cross-dataset prediction
+  multi_datasets:
+    - name: "indraEye"
+      root: "./data/indraEye_dataset"
+      enabled: false
+    - name: "visdrone"
+      root: "./data/visdrone_dataset"
+      enabled: true
+    - name: "UAV_DT"
+      root: "./data/UAV_DT"
+      enabled: false
+  
+  # Legacy single dataset path (used if multi_datasets not specified)
+  data_path: "./data/indraEye_dataset"
+  image_set: "val"  # train, val, or test
+  
+# Prediction settings
+prediction:
+  score_threshold: 0.5
+  num_images: 10  # Number of images to predict on (0 = all)
+  single_image: null  # Path to single image (overrides dataset prediction)
+  
+# Visualization settings
+visualization:
+  show_labels: true
+  box_color: "red"  # This will be overridden by per-class colors in the script
+  box_width: 3
+  font_size: 30  # Increased for better visibility
+  
+# Output settings
+output:
+  output_dir: "./outputs/predictions"
+  save_images: true
+
+# Device settings
+device: "cuda"
