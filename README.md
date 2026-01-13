@@ -17,13 +17,15 @@ Cross-geographic deployment of aerial object detection systems faces severe perf
 - **Detection-Specific Consistency**: Variable-length output handling through IoU-based geometric and KL-divergence-based semantic consistency
 - **Cross-Geographic Benchmarks**: Rigorous evaluation on VisDrone (China) → IndraEye (India) with novel DG metrics (DG-GAP, SI-Score, SSDG)
 
-### Results
+### Results mAp50
 
 | Training → Testing | Baseline | GPCL-Full | Improvement |
 |-------------------|----------|-----------|-------------|
-| VisDrone → IndraEye | 34.2% | **46.5%** | +12.3% (+36%) |
-| IndraEye → VisDrone | 28.9% | **37.6%** | +8.7% (+30%) |
-| Combined → IndraEye | 41.8% | **48.2%** | +6.4% (+15%) |
+| Indraeye → IndraEye | 64.5% | **68.2%** | +3.7% (+5.7%) |
+| VisDrone → IndreEye | 34.2% | **46.5%** | +12.3% (+36.0%) |
+| VisDrone → Visdrone | 55.3% | **58.7%** | +3.4% (+6.1%) |
+| IndraEye → VisDrone | 28.9% | **37.6%** | +8.7% (+30.0%) |
+
 
 ## 🚀 Quick Start
 
@@ -46,7 +48,7 @@ pip install -r requirements.txt
 ### Dataset Preparation
 
 1. **VisDrone Dataset**: Download from [VisDrone](http://aiskyeye.com/)
-2. **IndraEye Dataset**: Contact authors for access
+2. **IndraEye Dataset**: 
 
 Organize datasets as:
 ```
@@ -157,22 +159,6 @@ style_prob: 0.85          # Augmentation probability
 num_prototypes: 48        # Number of style prototypes
 ```
 
-## 🎓 Citation
-
-If you find this work helpful, please cite:
-
-```bibtex
-@inproceedings{bera2026gpcl,
-  title={Geometry-Preserving Contrastive Learning with Dual-Level Style Augmentation for Cross-Geographic Domain Generalization in Aerial Object Detection},
-  author={Bera, Biswajit and Kumawat, Sudhakar and Verma, Manisha},
-  booktitle={Proceedings of the 26th International Conference on Pattern Recognition (ICPR)},
-  year={2026}
-}
-```
-
-## 📝 License
-
-This project is released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgements
 
