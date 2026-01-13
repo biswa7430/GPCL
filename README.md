@@ -17,7 +17,7 @@ Cross-geographic deployment of aerial object detection systems faces severe perf
 - **Detection-Specific Consistency**: Variable-length output handling through IoU-based geometric and KL-divergence-based semantic consistency
 - **Cross-Geographic Benchmarks**: Rigorous evaluation on VisDrone (China) → IndraEye (India) with novel DG metrics (DG-GAP, SI-Score, SSDG)
 
-### Results mAp50
+### Results mAP%
 
 | Training → Testing | Baseline | GPCL-Full | Improvement |
 |-------------------|----------|-----------|-------------|
